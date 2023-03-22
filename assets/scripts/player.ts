@@ -1,45 +1,88 @@
-import { _decorator, Component, Node, Vec2,Vec3, systemEvent,SystemEvent, SystemEventType, KeyCode, EventKeyboard, v2, tween, v3 } from 'cc';
+import { _decorator, Component, Node, systemEvent, SystemEvent, KeyCode, EventKeyboard, Vec3 } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('player')
 export class player extends Component {
-    
-    private _movementSpeed = 0;
-    private _curPos = new Vec2();
-    private _targetPos = new Vec2();
-    private speed: number = 20;
 
-    
-    start() {
-        systemEvent.on(SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
-    }
+    private speed: number;
+    private goLeft: boolean;
+    private goRight: boolean;
+    private goUp: boolean;
+    private goDown: boolean;
 
-    onDestroy() {
-        systemEvent.off(SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
-    }
-    
     onKeyDown(event: EventKeyboard) {
-        switch (event.keyCode) {
+        // set a flag when key pressed
+        switch(event.keyCode) {
             case KeyCode.KEY_A:
-                tween(this.node).by(0.1,{ position: new Vec3(-this.speed, 0, 0) }).start();
+                this.goLeft = true;
                 break;
             case KeyCode.KEY_D:
-                tween(this.node).by(0.1,{ position: new Vec3(this.speed, 0, 0)}).start();
+                this.goRight = true;
                 break;
             case KeyCode.KEY_W:
-                tween(this.node).by(0.1,{ position: new Vec3(0, this.speed, 0)}).start();
+                this.goUp = true;
                 break;
             case KeyCode.KEY_S:
-                tween(this.node).by(0.1,{ position: new Vec3(0, -this.speed, 0)}).start();
-                break;
-            default:
+                this.goDown = true;
                 break;
         }
     }
 
+    onKeyUp(event: EventKeyboard) {
+        // unset a flag when key released
+        switch(event.keyCode) {
+            case KeyCode.KEY_A:
+                this.goLeft = false;
+                break;
+            case KeyCode.KEY_D:
+                this.goRight = false;
+                break;
+            case KeyCode.KEY_W:
+                this.goUp = false;
+                break;
+            case KeyCode.KEY_S:
+                this.goDown = false;
+                break;
+        }
+    }
+
+    start() {
+
+        this.goLeft = false;
+        this.goRight = false;
+        this.goUp = false;
+        this.goDown = false;
+
+        this.speed = 200;
+
+        systemEvent.on(SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
+
+        systemEvent.on(SystemEvent.EventType.KEY_UP, this.onKeyUp, this);
+    }
+
+    onDestroy() {
+        systemEvent.off(SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
+        systemEvent.off(SystemEvent.EventType.KEY_UP, this.onKeyUp, this);
+    }
+
     update(deltaTime: number) {
-        
+        let direction = new Vec3(0, 0, 0);
+        if (this.goLeft) {
+            direction.x -= 1;
+        } 
+        if (this.goRight) {
+            direction.x += 1;
+        }
+        if (this.goUp) {
+            direction.y += 1;
+        }
+        if (this.goDown) {
+            direction.y -= 1;
+        }
+        if (direction.magSqr() > 0) {
+            direction.normalize();
+            let newPosition = this.node.position.add(direction.multiplyScalar(this.speed * deltaTime));
+            this.node.setPosition(newPosition);
+        }
     }
 }
-
-
