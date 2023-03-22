@@ -1,4 +1,5 @@
 import { _decorator, Component, Node, systemEvent, SystemEvent, KeyCode, EventKeyboard, Vec3 } from 'cc';
+import { bullet } from './bullet';
 const { ccclass, property } = _decorator;
 
 @ccclass('player')
@@ -54,7 +55,7 @@ export class player extends Component {
         this.goDown = false;
 
         this.speed = 200;
-
+        
         systemEvent.on(SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
 
         systemEvent.on(SystemEvent.EventType.KEY_UP, this.onKeyUp, this);
