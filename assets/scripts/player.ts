@@ -54,7 +54,7 @@ export class player extends Component {
         this.goUp = false;
         this.goDown = false;
 
-        this.speed = 200;
+        this.speed = 500;
         
         systemEvent.on(SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
 

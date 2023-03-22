@@ -1,24 +1,25 @@
-import { _decorator, Component, Node, instantiate } from 'cc';
+import { _decorator, Component, Node, instantiate, Prefab } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('Game')
 export class Game extends Component {
     
-    property: {
-        bulletPrefab: {
-            default: null,
-            type: cPrefab
-        },
-        player: {
-            default: null,
-            type: Node
-        },
-    
+   @property(Prefab)
+   bulletPrefab: Prefab = null;
 
-    spawnBullet:function(){
-        var newBullet = instantiate(this.bulletPrefab)
+   @property(Node)
+   player: Node = null;
+
+    spawnBullet(){
+        var newBullet = instantiate(this.bulletPrefab);
+
+        this.node.addChild(newBullet);
+
+        newBullet.setPosition(this.player.getPosition());
+
+        //newBullet.getComponent('bullet'). = this;
     }
-}
+    
     update(deltaTime: number) {
         
     }
